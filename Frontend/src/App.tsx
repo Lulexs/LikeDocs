@@ -1,11 +1,17 @@
 import { MantineProvider } from "@mantine/core";
-import "./App.css";
 import "@mantine/core/styles.css";
+import TextEditor from "./features/TextEditor/TextEditor";
 
 function App() {
   return (
-    <MantineProvider>
-      <h1>Hello world</h1>
+    <MantineProvider
+      theme={{
+        fontFamily: "Verdana, sans-serif",
+        fontFamilyMonospace: "Monaco, Courier, monospace",
+        headings: { fontFamily: "Greycliff CF, sans-serif" },
+      }}
+    >
+      <TextEditor />
     </MantineProvider>
   );
 }

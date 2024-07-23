@@ -44,5 +44,6 @@ foreach (var p in patch) {
     Console.WriteLine(p);
 }
 
+str1 = "Actually Hello World";
 var obj = dmp.patch_apply(patch, str1);
-
+Console.WriteLine(obj[0]);
