@@ -1,4 +1,4 @@
-using Application;
+using Application.Logic;
 using Application.DTOs;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,7 +12,12 @@ public class WorkspacesController : BaseApiController {
     }
 
     [HttpPost("create")]
-    public async Task<ActionResult<WorkspaceDto>> CreateWorkspace([FromBody]WorkspaceDto workspaceDto) {
+    public async Task<ActionResult<ResponseWorkspaceDto>> CreateWorkspace([FromBody]RequestWorkspaceDto workspaceDto) {
         return HandleResult(await _workspaceLogic.CreateWorkspaceAsync(workspaceDto));
     } 
+
+    [HttpGet("")]
+    public async Task<ActionResult<List<ResponseWorkspaceDto>>> GetWorkspaces() {
+        return HandleResult(await _workspaceLogic.GetUsersWorkspaces());
+    }
 }

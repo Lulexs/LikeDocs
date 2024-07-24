@@ -1,5 +1,5 @@
 using API.Services;
-using Application;
+using Application.Logic;
 using Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;

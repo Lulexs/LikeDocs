@@ -26,5 +26,13 @@ public class DataContext : IdentityDbContext<AppUser> {
                 .HasMany(d => d.UserContexts)
                 .WithOne(u => u.Document)
                 .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Entity<Workspace>()
+               .HasMany(w => w.Members)
+               .WithMany(m => m.MemberWorkspaces);
+        
+        builder.Entity<Workspace>()
+               .HasOne(x => x.Owner)
+               .WithMany(x => x.OwnWorkspaces);
     }
 }
