@@ -52,7 +52,7 @@ export default class EditStore {
     });
 
     this.hubConnection.on("RecieveEdit", (edits: Edit[]) => {
-      
+        edits.forEach(x => console.log(x));
     });
   };
 }
