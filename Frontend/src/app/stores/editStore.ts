@@ -4,9 +4,18 @@ import {
   LogLevel,
 } from "@microsoft/signalr";
 import { makeAutoObservable } from "mobx";
+import { Edit } from "../models/Edit";
+import diff_match_patch from "diff-match-patch";
 
 export default class EditStore {
   hubConnection: HubConnection | null | undefined = null;
+  clientText: string | null = null;
+  clientShadow: string | null = null;
+  backupShadow: string | null = null;
+  n: number | null = null;
+  m: number | null = null;
+  backupShadowN: number | null = null;
+  dmp: diff_match_patch = new diff_match_patch();
 
   constructor() {
     makeAutoObservable(this);
@@ -32,5 +41,18 @@ export default class EditStore {
       .catch((error) =>
         console.error("Error establishing connection: ", error)
       );
+
+    this.hubConnection.on("GetInitialState", (initialContent: string) => {
+      this.clientText = initialContent;
+      this.clientShadow = initialContent;
+      this.backupShadow = initialContent;
+      this.n = 0;
+      this.m = 0;
+      this.backupShadowN = 0;
+    });
+
+    this.hubConnection.on("RecieveEdit", (edits: Edit[]) => {
+      
+    });
   };
 }

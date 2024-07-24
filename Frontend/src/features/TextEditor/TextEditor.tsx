@@ -1,15 +1,8 @@
 import { Flex, Textarea, TextInput } from "@mantine/core";
-import { useRef, useState } from "react";
+import { useState } from "react";
 
 export default function TextEditor() {
   const [value, setValue] = useState("");
-//   const clientShadowRef = useRef("");
-//   const backupShadowRef = useRef("");
-//   const nRef = useRef(0);
-//   const mRef = useRef(0);
-
-
-
 
   const [username, setUsername] = useState("");
 
