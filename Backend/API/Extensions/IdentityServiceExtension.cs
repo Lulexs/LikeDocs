@@ -1,4 +1,5 @@
 using System.Text;
+using API.Services;
 using Domain;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -39,6 +40,7 @@ public static class IdentityServiceExtensions {
                     }
                 };
             });
+        services.AddScoped<TokenService>();
 
         return services;    
     }
