@@ -1,3 +1,8 @@
+using API.Services;
+using Application;
+using Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
 
@@ -21,7 +26,14 @@ public static class ApplicationServiceExtensions {
         });
 
         services.AddSignalR();
-        services.AddControllers();
+        services.AddControllers(opt => {
+            var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
+            opt.Filters.Add(new AuthorizeFilter(policy));
+        });
+
+        services.AddHttpContextAccessor();
+        services.AddScoped<IUserAccessor, UserAccessor>();
+        services.AddScoped<WorkspaceLogic>();
 
         return services;
     }
