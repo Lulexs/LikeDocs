@@ -34,6 +34,7 @@ public static class ApplicationServiceExtensions {
         services.AddHttpContextAccessor();
         services.AddScoped<IUserAccessor, UserAccessor>();
         services.AddScoped<WorkspaceLogic>();
+        services.AddScoped<DocumentLogic>();
 
         return services;
     }

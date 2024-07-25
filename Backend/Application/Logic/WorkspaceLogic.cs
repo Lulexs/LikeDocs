@@ -49,7 +49,7 @@ public class WorkspaceLogic {
                                                 Id = x.Id,
                                                 Name = x.Name,
                                                 OwnsWorkspace = x.Owner!.UserName == usersUsername,
-                                                Documents = x.Documents.Select(y => new DocumentDto { Id = y.Id, Name = y.Name}).ToList()
+                                                Documents = x.Documents.Select(y => new ResponseDocumentDto { Id = y.Id, Name = y.Name}).ToList()
                                            })
                                            .ToListAsync();
         

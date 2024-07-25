@@ -1,6 +1,5 @@
 namespace Application.DTOs;
 
-public class DocumentDto {
-    public Guid Id { get; set; }
+public class RequestDocumentDto {
     public required string Name { get; set; }
 }
