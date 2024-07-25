@@ -11,6 +11,10 @@ export default class UserStore {
     makeAutoObservable(this);
   }
 
+  get isLoggedIn() {
+    return !!this.user;
+  }
+
   login = async (creds: UserLoginValues) => {
     const user = await agent.Account.login(creds);
     store.commonStore.setToken(user.token);

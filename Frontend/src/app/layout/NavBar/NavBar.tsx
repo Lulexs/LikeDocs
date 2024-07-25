@@ -1,4 +1,4 @@
-import { Group, Code, ScrollArea, rem } from "@mantine/core";
+import { Group, Code, ScrollArea, Paper, Flex } from "@mantine/core";
 import {
   IconNotes,
   IconCalendarStats,
@@ -10,9 +10,11 @@ import {
 } from "@tabler/icons-react";
 
 import classes from "./NavBar.module.css";
-import { UserButton } from "./UserButton/UserButton";
+import UserButton from "./UserButton/UserButton";
 import { LinksGroup } from "./NavbarLinksGroup/NavbarLinksGroup";
 import { Logo } from "./Logo/Logo";
+import { observer } from "mobx-react-lite";
+import { useStore } from "../../stores/store";
 
 const mockdata = [
   { label: "Dashboard", icon: IconGauge },
@@ -50,7 +52,9 @@ const mockdata = [
   },
 ];
 
-export function NavbarNested() {
+export default observer(function NavbarNested() {
+  const { userStore } = useStore();
+
   const links = mockdata.map((item) => (
     <LinksGroup {...item} key={item.label} />
   ));
@@ -59,18 +63,26 @@ export function NavbarNested() {
     <nav className={classes.navbar}>
       <div className={classes.header}>
         <Group justify="space-between">
-          <Logo style={{ width: rem(120) }} />
-          <Code fw={700}>v3.1.2</Code>
+          <Logo />
+          <Code fw={700}>v1.0.0</Code>
         </Group>
       </div>
 
-      <ScrollArea className={classes.links}>
-        <div className={classes.linksInner}>{links}</div>
-      </ScrollArea>
+      {userStore.isLoggedIn ? (
+        <ScrollArea className={classes.links}>
+          <div className={classes.linksInner}>{links}</div>
+        </ScrollArea>
+      ) : (
+        <Flex flex="1" justify="center" align="center">
+          <Paper ta="center" flex="1">
+            Sign in to continue
+          </Paper>
+        </Flex>
+      )}
 
       <div className={classes.footer}>
         <UserButton />
       </div>
     </nav>
   );
-}
+});

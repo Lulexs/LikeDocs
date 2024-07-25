@@ -1,6 +1,7 @@
 export interface User {
   username: string;
   token: string;
+  email: string;
 }
 
 export interface UserLoginValues {
