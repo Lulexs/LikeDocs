@@ -16,7 +16,28 @@ public class WorkspaceLogic {
         _userAccessor = userAccessor;
     }
 
-    public async Task<Result<List<ResponseWorkspaceDto>>> GetUsersWorkspaces() {
+    public async Task<Result<bool>> DeleteWorkspaceAsync(Guid id) {
+        var usersUsername = _userAccessor.GetUsername();
+
+        var workspace = await _dataContext.Workspaces
+                                          .Include(x => x.Owner)
+                                          .Where(x => x.Id == id && x.Owner!.UserName == usersUsername)
+                                          .FirstOrDefaultAsync();
+        
+        if (workspace == null) {
+            return Result<bool>.Failure("Workspace doesn't exist or you are not the owner of workspace");
+        }
+        _dataContext.Workspaces.Remove(workspace);
+        var result = await _dataContext.SaveChangesAsync() > 0;
+
+        if (result) {
+            return Result<bool>.Success(true);
+        } 
+
+        return Result<bool>.Failure("Error trying to delete workspace");
+    }
+
+    public async Task<Result<List<ResponseWorkspaceDto>>> GetUsersWorkspacesAsync() {
         var usersUsername = _userAccessor.GetUsername();
 
         var workspaces = await _dataContext.Workspaces

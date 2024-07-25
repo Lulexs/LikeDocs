@@ -11,13 +11,18 @@ public class WorkspacesController : BaseApiController {
         _workspaceLogic = workspaceLogic;
     }
 
-    [HttpPost("create")]
+    [HttpPost("")]
     public async Task<ActionResult<ResponseWorkspaceDto>> CreateWorkspace([FromBody]RequestWorkspaceDto workspaceDto) {
         return HandleResult(await _workspaceLogic.CreateWorkspaceAsync(workspaceDto));
     } 
 
     [HttpGet("")]
     public async Task<ActionResult<List<ResponseWorkspaceDto>>> GetWorkspaces() {
-        return HandleResult(await _workspaceLogic.GetUsersWorkspaces());
+        return HandleResult(await _workspaceLogic.GetUsersWorkspacesAsync());
+    }
+
+    [HttpDelete("{id:guid}")]
+    public async Task<ActionResult<bool>> DeleteWorkspace(Guid id) {
+        return HandleResult(await _workspaceLogic.DeleteWorkspaceAsync(id));
     }
 }
