@@ -29,7 +29,8 @@ public class AccountController : ControllerBase {
 
         if (result) {
             return Ok(new UserDto {
-                UserName = user.UserName!,
+                Username = user.UserName!,
+                Email = user.Email!,
                 Token = _tokenService.CreateToken(user)
             });
         }
@@ -56,7 +57,8 @@ public class AccountController : ControllerBase {
 
         if (result.Succeeded) {
                 return Ok(new UserDto {
-                UserName = user.UserName!,
+                Username = user.UserName!,
+                Email = user.Email!,
                 Token = _tokenService.CreateToken(user)
             });
         }

@@ -9,9 +9,25 @@ import {
 } from "@mantine/core";
 import classes from "./LoginPage.module.css";
 import { useNavigate } from "react-router-dom";
+import { useForm } from "@mantine/form";
+import { useStore } from "../../../stores/store";
 
 export function LoginPage() {
   const navigate = useNavigate();
+  const { userStore } = useStore();
+
+  const form = useForm({
+    mode: "uncontrolled",
+    initialValues: {
+      email: "",
+      password: "",
+    },
+
+    validate: {
+      email: (value) => (/^\S+@\S+$/.test(value) ? null : "Invalid email"),
+      password: (value) => (value.length >= 8 ? null : "Password too short"),
+    },
+  });
 
   return (
     <>
@@ -28,25 +44,23 @@ export function LoginPage() {
               WelcomeBack
             </Title>
 
-            <form>
+            <form onSubmit={form.onSubmit((values) => userStore.login(values))}>
               <TextInput
                 label="Email"
                 placeholder="example@gmail.com"
                 size="md"
+                key={form.key("email")}
+                {...form.getInputProps("email")}
               />
               <PasswordInput
                 label="Password"
                 placeholder="Your password"
                 mt="md"
                 size="md"
+                key={form.key("password")}
+                {...form.getInputProps("password")}
               />
-              <Button
-                type="submit"
-                fullWidth
-                mt="xl"
-                size="md"
-                onClick={() => {}}
-              >
+              <Button type="submit" fullWidth mt="xl" size="md">
                 Login
               </Button>
             </form>

@@ -9,9 +9,29 @@ import {
 } from "@mantine/core";
 import classes from "./RegisterPage.module.css";
 import { useNavigate } from "react-router-dom";
+import { useForm } from "@mantine/form";
+import { useStore } from "../../../stores/store";
 
 export function RegisterPage() {
   const navigate = useNavigate();
+  const { userStore } = useStore();
+
+  const form = useForm({
+    mode: "uncontrolled",
+    initialValues: {
+      email: "",
+      username: "",
+      password: "",
+    },
+
+    validate: {
+      email: (value) => (/^\S+@\S+$/.test(value) ? null : "Invalid email"),
+      username: (value) =>
+        value.length >= 4 ? null : "Username must be at least 4 chars longs",
+      password: (value) =>
+        value.length >= 8 ? null : "Password must be at least 8 chars long",
+    },
+  });
 
   return (
     <>
@@ -28,31 +48,33 @@ export function RegisterPage() {
               Sign up
             </Title>
 
-            <form>
+            <form
+              onSubmit={form.onSubmit((value) => userStore.register(value))}
+            >
               <TextInput
                 label="Email"
                 placeholder="example@gmail.com"
                 size="md"
+                key={form.key("email")}
+                {...form.getInputProps("email")}
               />
               <TextInput
                 label="Username"
                 placeholder="StrongBoi"
                 size="md"
                 mt="md"
+                key={form.key("username")}
+                {...form.getInputProps("username")}
               />
               <PasswordInput
                 label="Password"
                 placeholder="Your password"
                 mt="md"
                 size="md"
+                key={form.key("password")}
+                {...form.getInputProps("password")}
               />
-              <Button
-                type="submit"
-                fullWidth
-                mt="xl"
-                size="md"
-                onClick={() => {}}
-              >
+              <Button type="submit" fullWidth mt="xl" size="md">
                 Login
               </Button>
             </form>
