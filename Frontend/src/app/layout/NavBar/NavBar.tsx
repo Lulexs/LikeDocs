@@ -15,6 +15,9 @@ import { LinksGroup } from "./NavbarLinksGroup/NavbarLinksGroup";
 import { Logo } from "./Logo/Logo";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores/store";
+import { useLocation } from "react-router-dom";
+import { LoginPage } from "./Auth/LoginPage";
+import { RegisterPage } from "./Auth/RegisterPage";
 
 const mockdata = [
   { label: "Dashboard", icon: IconGauge },
@@ -54,6 +57,7 @@ const mockdata = [
 
 export default observer(function NavbarNested() {
   const { userStore } = useStore();
+  const location = useLocation();
 
   const links = mockdata.map((item) => (
     <LinksGroup {...item} key={item.label} />
@@ -74,9 +78,13 @@ export default observer(function NavbarNested() {
         </ScrollArea>
       ) : (
         <Flex flex="1" justify="center" align="center">
-          <Paper ta="center" flex="1">
-            Sign in to continue
-          </Paper>
+          {location.pathname == "/" && (
+            <Paper ta="center" flex="1">
+              Sign in to continue
+            </Paper>
+          )}
+          {location.pathname == "/signin" && <LoginPage />}
+          {location.pathname == "/signup" && <RegisterPage />}
         </Flex>
       )}
 

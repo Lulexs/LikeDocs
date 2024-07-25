@@ -3,12 +3,23 @@ import { IconChevronRight } from "@tabler/icons-react";
 import classes from "./UserButton.module.css";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../../stores/store";
+import { useNavigate } from "react-router-dom";
 
 export default observer(function UserButton() {
   const { userStore } = useStore();
+  const navigate = useNavigate();
 
   return (
-    <UnstyledButton className={classes.user}>
+    <UnstyledButton
+      onClick={() => {
+        if (userStore.isLoggedIn) {
+          userStore.logout();
+        } else {
+          navigate("/signin");
+        }
+      }}
+      className={classes.user}
+    >
       <Group>
         <Avatar radius="xl" />
 
