@@ -1,10 +1,12 @@
-import { Flex, Textarea, TextInput } from "@mantine/core";
+import { Flex, Textarea } from "@mantine/core";
 import { useState } from "react";
+import { selectToEdit, signinToEdit } from "../../app/layout/constants";
+import { useStore } from "../../app/stores/store";
+import { observer } from "mobx-react-lite";
 
-export default function TextEditor() {
-  const [value, setValue] = useState("");
-
-  const [username, setUsername] = useState("");
+export default observer(function TextEditor() {
+  const {userStore, workspaceStore } = useStore();
+  const [value, setValue] = useState('');
 
   const generateLineNumbers = (text: string) => {
     const lines = text.split("\n").length;
@@ -15,12 +17,6 @@ export default function TextEditor() {
 
   return (
     <Flex m="20px" w="98%">
-      <TextInput
-        value={username}
-        onChange={(event) => setUsername(event.currentTarget.value)}
-        label="Username"
-        mr="10px"
-      ></TextInput>
       <Textarea
         minRows={50}
         maxRows={500}
@@ -37,9 +33,11 @@ export default function TextEditor() {
         minRows={50}
         autosize
         maxRows={500}
+        disabled={!userStore.isLoggedIn || !workspaceStore.selectedDocument}
+        placeholder={!userStore.isLoggedIn ? signinToEdit : selectToEdit}
         ml="0"
         flex={1}
       />
     </Flex>
   );
-}
+})

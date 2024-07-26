@@ -8,8 +8,9 @@ import {
   UnstyledButton,
   rem,
 } from "@mantine/core";
-import { IconChevronRight } from "@tabler/icons-react";
+import { IconChevronRight, IconFileMinus, IconFilePlus, IconFolderMinus } from "@tabler/icons-react";
 import classes from "./NavbarLinksGroup.module.css";
+import { useContextMenu } from "mantine-contextmenu";
 
 interface LinksGroupProps {
   icon: React.FC<any>;
@@ -26,6 +27,9 @@ export function LinksGroup({
 }: LinksGroupProps) {
   const hasLinks = Array.isArray(links);
   const [opened, setOpened] = useState(initiallyOpened || false);
+  const {showContextMenu} = useContextMenu();
+
+
   const items = (hasLinks ? links : []).map((link) => (
     <Text<"a">
       component="a"
@@ -33,15 +37,40 @@ export function LinksGroup({
       href={link.link}
       key={link.label}
       onClick={(event) => event.preventDefault()}
+      onContextMenu={showContextMenu([
+        {
+          key: 'delete-document',
+          icon: <IconFileMinus size={25} />,
+          title: 'Delete document',
+          onClick: () => console.log("Hi"),
+        }
+
+      ])}
     >
       {link.label}.py
     </Text>
   ));
 
+
   return (
     <>
       <UnstyledButton
         onClick={() => setOpened((o) => !o)}
+        onContextMenu={showContextMenu([
+          {
+            key: 'new-document',
+            icon: <IconFilePlus size={25} />,
+            title: 'New document',
+            onClick: () => console.log("Hi"),
+          },
+          {
+            key: 'delete-workspace',
+            icon: <IconFolderMinus size={25} />,
+            title: "Delete workspace",
+            onClick: () => console.log("Hi")
+          }
+
+        ])}
         className={classes.control}
       >
         <Group justify="space-between" gap={0}>

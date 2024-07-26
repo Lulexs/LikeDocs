@@ -12,7 +12,7 @@ export default class UserStore {
   }
 
   get isLoggedIn() {
-    return !!this.user;
+    return this.user != null;
   }
 
   login = async (creds: UserLoginValues) => {

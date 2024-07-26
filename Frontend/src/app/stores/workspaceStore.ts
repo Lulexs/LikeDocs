@@ -4,6 +4,8 @@ import agent from "../api/agent";
 
 export default class WorkspaceStore {
   workspaces: Map<string, Workspace> = new Map();
+  selectedWorkspace: Workspace | null = null;
+  selectedDocument: Workspace | null = null;
 
   constructor() {
     makeAutoObservable(this);

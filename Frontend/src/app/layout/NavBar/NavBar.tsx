@@ -1,5 +1,5 @@
 import { Group, Code, ScrollArea, Paper, Flex } from "@mantine/core";
-import { IconFolder, IconFile, IconFolderStar } from "@tabler/icons-react";
+import { IconFolder, IconFile, IconFolderStar, IconFolderPlus } from "@tabler/icons-react";
 
 import classes from "./NavBar.module.css";
 import UserButton from "./UserButton/UserButton";
@@ -10,10 +10,13 @@ import { useStore } from "../../stores/store";
 import { useLocation } from "react-router-dom";
 import { LoginPage } from "./Auth/LoginPage";
 import { RegisterPage } from "./Auth/RegisterPage";
+import { useContextMenu } from "mantine-contextmenu";
 
 export default observer(function NavbarNested() {
   const { userStore, workspaceStore } = useStore();
   const location = useLocation();
+
+  const { showContextMenu } = useContextMenu();
 
   const links = [...workspaceStore.workspaces.values()].map((item) => (
     <LinksGroup
@@ -42,7 +45,18 @@ export default observer(function NavbarNested() {
       </div>
 
       {userStore.isLoggedIn ? (
-        <ScrollArea className={classes.links}>
+        <ScrollArea
+          onContextMenu={showContextMenu([
+            {
+              key: 'new-workspace',
+              icon: <IconFolderPlus size={25} />,
+              title: 'New workspace',
+              onClick: () => console.log("Hi"),
+            },
+
+          ])}
+          className={classes.links}
+        >
           <div className={classes.linksInner}>{links}</div>
         </ScrollArea>
       ) : (
