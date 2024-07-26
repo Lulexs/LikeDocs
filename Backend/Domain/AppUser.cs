@@ -5,5 +5,4 @@ namespace Domain;
 public class AppUser : IdentityUser {
     public ICollection<Workspace> OwnWorkspaces { get; set; } = [];
     public ICollection<Workspace> MemberWorkspaces { get; set; } = [];
-    public UserContext? UserContext { get; set; }
 }

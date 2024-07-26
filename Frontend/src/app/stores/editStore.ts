@@ -16,6 +16,8 @@ export default class EditStore {
   m: number | null = null;
   backupShadowN: number | null = null;
   dmp: diff_match_patch = new diff_match_patch();
+  edits: Edit[] = [];
+  numOfEdits: number = 0;
 
   constructor() {
     makeAutoObservable(this);
@@ -64,5 +66,18 @@ export default class EditStore {
 
   setClientTextFromEditor = (txt: string) => {
     this.clientText = txt;
+  };
+
+  syncClientShadow = () => {
+    const diffs = this.dmp.diff_main(this.clientText!, this.clientShadow!);
+    this.edits.push({
+      n: this.n!,
+      m: this.m!,
+      diff: diffs,
+    });
+    this.n! += 1;
+    this.clientShadow = this.clientText;
+
+    this.hubConnection?.invoke("NewEdits", this.edits);
   };
 }
