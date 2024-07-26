@@ -35,6 +35,7 @@ public static class ApplicationServiceExtensions {
         services.AddScoped<IUserAccessor, UserAccessor>();
         services.AddScoped<WorkspaceLogic>();
         services.AddScoped<DocumentLogic>();
+        services.AddScoped<EditLogic>();
 
         return services;
     }

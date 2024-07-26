@@ -3,7 +3,7 @@ import {
   HubConnectionBuilder,
   LogLevel,
 } from "@microsoft/signalr";
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, runInAction } from "mobx";
 import { Edit } from "../models/Edit";
 import diff_match_patch from "diff-match-patch";
 
@@ -21,17 +21,10 @@ export default class EditStore {
     makeAutoObservable(this);
   }
 
-  createHubConnection = (
-    workspaceId: string = "abc",
-    docId: string = "123"
-  ) => {
+  createHubConnection = (docId: string) => {
     // TODO: check if user is inside some workspace
     this.hubConnection = new HubConnectionBuilder()
-      .withUrl(
-        `${
-          import.meta.env.VITE_SERVER_HUB_URL
-        }?$workspaceId=${workspaceId}&docId=${docId}`
-      )
+      .withUrl(`${import.meta.env.VITE_SERVER_HUB_URL}?docId=${docId}`)
       .withAutomaticReconnect()
       .configureLogging(LogLevel.Information)
       .build();
@@ -43,16 +36,33 @@ export default class EditStore {
       );
 
     this.hubConnection.on("GetInitialState", (initialContent: string) => {
-      this.clientText = initialContent;
-      this.clientShadow = initialContent;
-      this.backupShadow = initialContent;
-      this.n = 0;
-      this.m = 0;
-      this.backupShadowN = 0;
+      console.log(initialContent);
+      runInAction(() => {
+        this.clientText = initialContent;
+        this.clientShadow = initialContent;
+        this.backupShadow = initialContent;
+        this.n = 0;
+        this.m = 0;
+        this.backupShadowN = 0;
+      });
     });
 
     this.hubConnection.on("RecieveEdit", (edits: Edit[]) => {
-        edits.forEach(x => console.log(x));
+      edits.forEach((x) => console.log(x));
     });
+
+    this.hubConnection.on("ErrorEstablishingConnection", () => {
+      this.stopHubConnection();
+    });
+  };
+
+  stopHubConnection = () => {
+    this.hubConnection
+      ?.stop()
+      .catch((error) => console.log("Error stopping connection: ", error));
+  };
+
+  setClientTextFromEditor = (txt: string) => {
+    this.clientText = txt;
   };
 }

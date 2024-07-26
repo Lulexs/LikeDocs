@@ -8,27 +8,35 @@ import {
   UnstyledButton,
   rem,
 } from "@mantine/core";
-import { IconChevronRight, IconFileMinus, IconFilePlus, IconFolderMinus } from "@tabler/icons-react";
+import {
+  IconChevronRight,
+  IconFileMinus,
+  IconFilePlus,
+  IconFolderMinus,
+} from "@tabler/icons-react";
 import classes from "./NavbarLinksGroup.module.css";
 import { useContextMenu } from "mantine-contextmenu";
+import { useStore } from "../../../stores/store";
 
 interface LinksGroupProps {
   icon: React.FC<any>;
   label: string;
   initiallyOpened?: boolean;
-  links?: { label: string; link: string }[];
+  links?: { label: string; link: string; docId: string }[];
+  workspaceId: string;
 }
 
 export function LinksGroup({
   icon: Icon,
+  workspaceId,
   label,
   initiallyOpened,
   links,
 }: LinksGroupProps) {
   const hasLinks = Array.isArray(links);
   const [opened, setOpened] = useState(initiallyOpened || false);
-  const {showContextMenu} = useContextMenu();
-
+  const { showContextMenu } = useContextMenu();
+  const { workspaceStore } = useStore();
 
   const items = (hasLinks ? links : []).map((link) => (
     <Text<"a">
@@ -36,21 +44,22 @@ export function LinksGroup({
       className={classes.link}
       href={link.link}
       key={link.label}
-      onClick={(event) => event.preventDefault()}
+      onClick={(event) => {
+        event.preventDefault();
+        workspaceStore.selectDocument(workspaceId, link.docId);
+      }}
       onContextMenu={showContextMenu([
         {
-          key: 'delete-document',
+          key: "delete-document",
           icon: <IconFileMinus size={25} />,
-          title: 'Delete document',
+          title: "Delete document",
           onClick: () => console.log("Hi"),
-        }
-
+        },
       ])}
     >
       {link.label}.py
     </Text>
   ));
-
 
   return (
     <>
@@ -58,18 +67,17 @@ export function LinksGroup({
         onClick={() => setOpened((o) => !o)}
         onContextMenu={showContextMenu([
           {
-            key: 'new-document',
+            key: "new-document",
             icon: <IconFilePlus size={25} />,
-            title: 'New document',
+            title: "New document",
             onClick: () => console.log("Hi"),
           },
           {
-            key: 'delete-workspace',
+            key: "delete-workspace",
             icon: <IconFolderMinus size={25} />,
             title: "Delete workspace",
-            onClick: () => console.log("Hi")
-          }
-
+            onClick: () => console.log("Hi"),
+          },
         ])}
         className={classes.control}
       >

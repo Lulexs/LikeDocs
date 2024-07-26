@@ -1,5 +1,11 @@
 import { Group, Code, ScrollArea, Paper, Flex } from "@mantine/core";
-import { IconFolder, IconFile, IconFolderStar, IconFolderPlus } from "@tabler/icons-react";
+import {
+  IconFolder,
+  IconFile,
+  IconFolderStar,
+  IconFolderPlus,
+  IconJoinBevel,
+} from "@tabler/icons-react";
 
 import classes from "./NavBar.module.css";
 import UserButton from "./UserButton/UserButton";
@@ -21,6 +27,7 @@ export default observer(function NavbarNested() {
   const links = [...workspaceStore.workspaces.values()].map((item) => (
     <LinksGroup
       {...{
+        workspaceId: item.id,
         label: item.name,
         icon: item.ownsWorkspace ? IconFolderStar : IconFolder,
         links: item.documents.map((d) => {
@@ -28,6 +35,7 @@ export default observer(function NavbarNested() {
             label: d.name,
             link: "/",
             icon: IconFile,
+            docId: d.id,
           };
         }),
       }}
@@ -48,12 +56,17 @@ export default observer(function NavbarNested() {
         <ScrollArea
           onContextMenu={showContextMenu([
             {
-              key: 'new-workspace',
+              key: "new-workspace",
               icon: <IconFolderPlus size={25} />,
-              title: 'New workspace',
+              title: "New workspace",
               onClick: () => console.log("Hi"),
             },
-
+            {
+              key: "join-workspace",
+              icon: <IconJoinBevel size={25} />,
+              title: "Join workspace",
+              onClick: () => console.log("Hi"),
+            },
           ])}
           className={classes.links}
         >
