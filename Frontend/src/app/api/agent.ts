@@ -1,6 +1,7 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { store } from "../stores/store";
 import { User, UserLoginValues, UserRegisterValues } from "../models/User";
+import { Workspace } from "../models/Workspace";
 
 axios.defaults.baseURL = import.meta.env.VITE_SERVER_API_URL;
 
@@ -31,10 +32,16 @@ const Account = {
   login: (user: UserLoginValues) => requests.post<User>(`/account/login`, user),
   register: (user: UserRegisterValues) =>
     requests.post<User>(`/account/register`, user),
+  getUser: () => requests.get<User>("/account/getUser"),
+};
+
+const Workspaces = {
+  list: () => requests.get<Workspace[]>("/workspaces"),
 };
 
 const agent = {
   Account,
+  Workspaces,
 };
 
 export default agent;

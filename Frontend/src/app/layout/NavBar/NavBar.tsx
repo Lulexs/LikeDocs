@@ -1,13 +1,5 @@
 import { Group, Code, ScrollArea, Paper, Flex } from "@mantine/core";
-import {
-  IconNotes,
-  IconCalendarStats,
-  IconGauge,
-  IconPresentationAnalytics,
-  IconFileAnalytics,
-  IconAdjustments,
-  IconLock,
-} from "@tabler/icons-react";
+import { IconFolder, IconFile, IconFolderStar } from "@tabler/icons-react";
 
 import classes from "./NavBar.module.css";
 import UserButton from "./UserButton/UserButton";
@@ -19,48 +11,25 @@ import { useLocation } from "react-router-dom";
 import { LoginPage } from "./Auth/LoginPage";
 import { RegisterPage } from "./Auth/RegisterPage";
 
-const mockdata = [
-  { label: "Dashboard", icon: IconGauge },
-  {
-    label: "Market news",
-    icon: IconNotes,
-    initiallyOpened: true,
-    links: [
-      { label: "Overview", link: "/" },
-      { label: "Forecasts", link: "/" },
-      { label: "Outlook", link: "/" },
-      { label: "Real time", link: "/" },
-    ],
-  },
-  {
-    label: "Releases",
-    icon: IconCalendarStats,
-    links: [
-      { label: "Upcoming releases", link: "/" },
-      { label: "Previous releases", link: "/" },
-      { label: "Releases schedule", link: "/" },
-    ],
-  },
-  { label: "Analytics", icon: IconPresentationAnalytics },
-  { label: "Contracts", icon: IconFileAnalytics },
-  { label: "Settings", icon: IconAdjustments },
-  {
-    label: "Security",
-    icon: IconLock,
-    links: [
-      { label: "Enable 2FA", link: "/" },
-      { label: "Change password", link: "/" },
-      { label: "Recovery codes", link: "/" },
-    ],
-  },
-];
-
 export default observer(function NavbarNested() {
-  const { userStore } = useStore();
+  const { userStore, workspaceStore } = useStore();
   const location = useLocation();
 
-  const links = mockdata.map((item) => (
-    <LinksGroup {...item} key={item.label} />
+  const links = [...workspaceStore.workspaces.values()].map((item) => (
+    <LinksGroup
+      {...{
+        label: item.name,
+        icon: item.ownsWorkspace ? IconFolderStar : IconFolder,
+        links: item.documents.map((d) => {
+          return {
+            label: d.name,
+            link: "/",
+            icon: IconFile,
+          };
+        }),
+      }}
+      key={item.id}
+    />
   ));
 
   return (

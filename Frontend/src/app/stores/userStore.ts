@@ -19,6 +19,7 @@ export default class UserStore {
     const user = await agent.Account.login(creds);
     store.commonStore.setToken(user.token);
     runInAction(() => (this.user = user));
+    store.workspaceStore.loadWorkspaces();
     router.navigate("/");
   };
 
@@ -31,7 +32,16 @@ export default class UserStore {
 
   logout = () => {
     store.commonStore.setToken(null);
+    store.workspaceStore.clearWorkspaces();
     runInAction(() => (this.user = null));
+
     router.navigate("/");
+  };
+
+  getUser = async () => {
+    const user = await agent.Account.getUser();
+    store.commonStore.setToken(user.token);
+    runInAction(() => (this.user = user));
+    store.workspaceStore.loadWorkspaces();
   };
 }

@@ -1,9 +1,11 @@
+using System.Security.Claims;
 using API.DTOs;
 using API.Services;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers;
 
@@ -64,6 +66,20 @@ public class AccountController : ControllerBase {
         }
 
         return BadRequest(result.Errors);
+    }
+
+    [HttpGet("getUser")]
+    public async Task<ActionResult<UserDto>> GetUser() {
+        var user = await _userManager.Users.FirstOrDefaultAsync(x => x.Email == User.FindFirstValue(ClaimTypes.Email));
+        
+        if (user == null)
+            return BadRequest("Please try to sign in again");
+
+        return Ok(new UserDto{
+            Username = user.UserName!,
+            Email = user.Email!,
+            Token = _tokenService.CreateToken(user)
+        });
     }
 
 }
