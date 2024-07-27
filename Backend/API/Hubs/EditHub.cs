@@ -13,6 +13,11 @@ public class EditHub : Hub {
     }
 
     public async Task NewEdits(JsonElement editsDto) {
+        var lastN = await _editLogic.ApplyEdits(Context.ConnectionId, DeserializeEdits(editsDto));
+        Console.WriteLine(lastN);
+    }
+
+    private List<EditDto> DeserializeEdits(JsonElement editsDto) {
         List<EditDto> edits = new List<EditDto>();
 
         var editList = JsonSerializer.Deserialize<List<JsonElement>>(editsDto.GetRawText());
@@ -41,11 +46,8 @@ public class EditHub : Hub {
             edits.Add(newEdit);
         }
 
-        foreach (var edit in edits)
-        {
-            Console.WriteLine(edit);
-        }
-    }   
+        return edits;
+    }
 
     public override async Task OnDisconnectedAsync(Exception? exception) {
         await _editLogic.DeleteUserContext(Context.ConnectionId);
@@ -65,7 +67,7 @@ public class EditHub : Hub {
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, docId!);
         }
 
-        var created = await _editLogic.CreateUserContext(new Domain.UserContext() {
+        var created = await _editLogic.CreateUserContext(Guid.Parse(docId!), new Domain.UserContext() {
                 Id = Guid.NewGuid(),
                 connectionId = Context.ConnectionId,
                 ServerShadow = result.Value!,

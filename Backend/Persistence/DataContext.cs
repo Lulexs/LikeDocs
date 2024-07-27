@@ -34,5 +34,5 @@ public class DataContext : IdentityDbContext<AppUser> {
         builder.Entity<Workspace>()
                .HasOne(x => x.Owner)
                .WithMany(x => x.OwnWorkspaces);
-    }
+        }
 }
