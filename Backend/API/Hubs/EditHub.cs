@@ -13,8 +13,9 @@ public class EditHub : Hub {
     }
 
     public async Task NewEdits(JsonElement editsDto) {
-        var lastN = await _editLogic.ApplyEdits(Context.ConnectionId, DeserializeEdits(editsDto));
-        Console.WriteLine(lastN);
+        var editsToSend = await _editLogic.ApplyEditsAndPrepareEditsForSending(Context.ConnectionId, DeserializeEdits(editsDto));
+        if (editsToSend.IsSuccess)
+            Console.WriteLine("HEREEEEEE " + editsToSend.Value!.Count);
     }
 
     private List<EditDto> DeserializeEdits(JsonElement editsDto) {

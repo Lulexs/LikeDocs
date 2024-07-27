@@ -1,3 +1,4 @@
+using System.Security.Cryptography.X509Certificates;
 using Domain;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +13,8 @@ public class DataContext : IdentityDbContext<AppUser> {
     public DbSet<Workspace> Workspaces { get; set; }
     public DbSet<Document> Documents { get; set; }
     public DbSet<UserContext> UserContexts { get; set; }
+    public DbSet<DiffWrapper> DiffWrapers { get; set; }
+    public DbSet<Edit> Edits { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -34,5 +37,15 @@ public class DataContext : IdentityDbContext<AppUser> {
         builder.Entity<Workspace>()
                .HasOne(x => x.Owner)
                .WithMany(x => x.OwnWorkspaces);
-        }
+
+        // builder.Entity<UserContext>()
+        //        .HasMany(x => x.Edits)
+        //        .WithOne(x => x.UserContext)
+        //        .OnDelete(DeleteBehavior.Cascade);
+        
+        // builder.Entity<Edit>()
+        //        .HasMany(x => x.diff)
+        //        .WithOne(x => x.Edit)
+        //        .OnDelete(DeleteBehavior.Cascade);
+    }
 }
