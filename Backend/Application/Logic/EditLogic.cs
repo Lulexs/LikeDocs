@@ -1,5 +1,6 @@
 using Application.Core;
 using Domain;
+using Microsoft.EntityFrameworkCore;
 using Persistence;
 
 namespace Application.Logic;
@@ -29,5 +30,15 @@ public class EditLogic {
             return Result<bool>.Success(true);
         } 
         return Result<bool>.Failure("Can't create user context");
+    }
+
+    public async Task<Result<bool>> DeleteUserContext(string connectionId) {
+        var context = await _dataContext.UserContexts.FirstOrDefaultAsync(x => x.connectionId == connectionId);
+        if (context != null) {
+            _dataContext.Remove(context);
+            await _dataContext.SaveChangesAsync();
+            return Result<bool>.Success(true);
+        }
+        return Result<bool>.Failure("Error trying to delete context");
     }
 }

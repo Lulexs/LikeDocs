@@ -24,7 +24,6 @@ export default class EditStore {
   }
 
   createHubConnection = (docId: string) => {
-    // TODO: check if user is inside some workspace
     this.hubConnection = new HubConnectionBuilder()
       .withUrl(`${import.meta.env.VITE_SERVER_HUB_URL}?docId=${docId}`)
       .withAutomaticReconnect()
@@ -69,15 +68,23 @@ export default class EditStore {
   };
 
   syncClientShadow = () => {
-    const diffs = this.dmp.diff_main(this.clientText!, this.clientShadow!);
-    this.edits.push({
-      n: this.n!,
-      m: this.m!,
-      diff: diffs,
-    });
-    this.n! += 1;
-    this.clientShadow = this.clientText;
+    if (this.clientText == null || this.clientShadow == null) return;
+    const diffs = this.dmp.diff_main(this.clientShadow!, this.clientText!);
+    if (diffs.length > 0) {
+      this.edits.push({
+        n: this.n!,
+        m: this.m!,
+        diff: diffs.map((x) => {
+          return {
+            operation: x[0],
+            text: x[1],
+          };
+        }),
+      });
+      this.n! += 1;
+      this.clientShadow = this.clientText;
 
-    this.hubConnection?.invoke("NewEdits", this.edits);
+      this.hubConnection?.invoke("NewEdits", this.edits);
+    }
   };
 }

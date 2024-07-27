@@ -25,3 +25,5 @@ app.MapControllers();
 app.MapHub<EditHub>("/edit");
 
 app.Run();
+
+// [{"n":0,"m":0,"diff":[[-1,"Daburaemon"]]}]

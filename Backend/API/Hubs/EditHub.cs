@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Application.DTOs;
 using Application.Logic;
 using Microsoft.AspNetCore.SignalR;
@@ -11,10 +12,46 @@ public class EditHub : Hub {
         _editLogic = editLogic;
     }
 
-    public async Task NewEdits(EditDto editDto) {
+    public async Task NewEdits(JsonElement editsDto) {
+        List<EditDto> edits = new List<EditDto>();
 
+        var editList = JsonSerializer.Deserialize<List<JsonElement>>(editsDto.GetRawText());
+
+        foreach (var obj in editList!)
+        {
+            obj.TryGetProperty("n", out var n);
+            obj.TryGetProperty("m", out var m);
+            obj.TryGetProperty("diff", out var diff);
+            var diffs = JsonSerializer.Deserialize<List<JsonElement>>(diff);
+
+            var newEdit = new EditDto()
+            {
+                n = n.GetInt32(),
+                m = m.GetInt32(),
+                diff = []
+            };
+
+
+            foreach(var dif in diffs!) {
+                dif.TryGetProperty("operation", out var op);
+                dif.TryGetProperty("text", out var text);
+                newEdit.diff.Add(new DiffMatchPatch.Diff((DiffMatchPatch.Operation)op.GetInt32(), text.GetString()));
+            }
+
+            edits.Add(newEdit);
+        }
+
+        foreach (var edit in edits)
+        {
+            Console.WriteLine(edit);
+        }
+    }   
+
+    public override async Task OnDisconnectedAsync(Exception? exception) {
+        await _editLogic.DeleteUserContext(Context.ConnectionId);
+        await base.OnDisconnectedAsync(exception);
     }
- 
+
     public override async Task OnConnectedAsync()
     {
         var httpContext = Context.GetHttpContext();
