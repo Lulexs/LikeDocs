@@ -10,5 +10,5 @@ public class UserContext {
     public int N { get; set; }
     public int M { get; set; }
     public int BackupM { get; set; }
-    public List<Edit> Edits { get; set; } = [];
+    public Edit? Edit { get; set; }
 }

@@ -46,22 +46,22 @@ public class EditLogic {
         return Result<bool>.Failure("Error trying to delete context");
     }
 
-    public async Task<Result<List<Edit>>> ApplyEditsAndPrepareEditsForSending(string connectionId, List<EditDto> edits) {
+    public async Task<Result<Edit>> ApplyEditsAndPrepareEditsForSending(string connectionId, List<EditDto> edits) {
         var context = await _dataContext.UserContexts
                                         .Include(x => x.Document)
                                         .Where(x => x.connectionId == connectionId)
                                         .FirstOrDefaultAsync();
 
         if (context == null) 
-            return Result<List<Edit>>.Failure("Couldn't find user's context");
+            return Result<Edit>.Failure("Couldn't find user's context");
         
         await ApplyEdits(context, edits);
-        await PrepareEditsForSending(context);
+        await PrepareEditForSending(context);
 
-        return Result<List<Edit>>.Success(context.Edits);
+        return Result<Edit>.Success(context.Edit!);
     }
 
-    private async Task PrepareEditsForSending(UserContext context) {
+    private async Task PrepareEditForSending(UserContext context) {
         var dmp = new diff_match_patch();
 
         var serverText = context.Document!.Text;
@@ -73,14 +73,12 @@ public class EditLogic {
             diff = diffs.Select(x => new DiffWrapper() { text = x.text, operation = (int)x.operation }).ToList()
         };
 
-        if (edit.diff.Count > 0) {
-            context.ServerShadow = serverText;
-            context.M += 1;
+        context.ServerShadow = serverText;
+        context.M += 1;
 
-            context.Edits.Add(edit);
-            _dataContext.Update(context);
-            await _dataContext.SaveChangesAsync();
-        }
+        context.Edit = edit;
+        _dataContext.Update(context);
+        await _dataContext.SaveChangesAsync();
     }
 
     private async Task<Result<int>> ApplyEdits(UserContext context, List<EditDto> edits) {
@@ -90,14 +88,18 @@ public class EditLogic {
         var dmp = new diff_match_patch();
 
         edits = edits.Where(x => x.n >= context.N).ToList();
+        foreach(var edit in edits) {
+            foreach (var diff in edit.diff) {
+                Console.WriteLine(diff.operation);
+            }
+        }
 
         if (edits.First().m < context!.M) {
             context.ServerShadow = context.ShadowBackup;
             context.M = context.BackupM;
-            context.Edits.Clear();
         }
 
-        var diffs = edits.Where(edit => context.N <= edit.n).Select(x => x.diff).SelectMany(list => list).ToList();
+        var diffs = edits.Select(x => x.diff).SelectMany(list => list).ToList();
         var patches = dmp.patch_make(diffs);
 
         context.ServerShadow = (string)dmp.patch_apply(patches, context.ServerShadow)[0];
@@ -109,7 +111,6 @@ public class EditLogic {
         context.Document.Text = (string)appliedPatch;
 
         _dataContext.Update(context);
-        context.Edits = context.Edits.Where(x => x.m < edits.Last().m).ToList();
         await _dataContext.SaveChangesAsync();
 
         return Result<int>.Success(edits.Last().n);

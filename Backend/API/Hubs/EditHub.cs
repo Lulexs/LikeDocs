@@ -14,8 +14,7 @@ public class EditHub : Hub {
 
     public async Task NewEdits(JsonElement editsDto) {
         var editsToSend = await _editLogic.ApplyEditsAndPrepareEditsForSending(Context.ConnectionId, DeserializeEdits(editsDto));
-        if (editsToSend.IsSuccess)
-            Console.WriteLine("HEREEEEEE " + editsToSend.Value!.Count);
+        await Clients.Caller.SendAsync("RecieveEdit", editsToSend.Value);
     }
 
     private List<EditDto> DeserializeEdits(JsonElement editsDto) {
@@ -60,12 +59,10 @@ public class EditHub : Hub {
         var httpContext = Context.GetHttpContext();
         var docId = httpContext!.Request.Query["docId"];
 
-        await Groups.AddToGroupAsync(Context.ConnectionId, docId!);
         var result = await _editLogic.GetDocContent(Guid.Parse(docId!));
 
         if (!result.IsSuccess) {
             await Clients.Caller.SendAsync("ErrorEstablishingConnection");
-            await Groups.RemoveFromGroupAsync(Context.ConnectionId, docId!);
         }
 
         var created = await _editLogic.CreateUserContext(Guid.Parse(docId!), new Domain.UserContext() {
@@ -77,7 +74,6 @@ public class EditHub : Hub {
         
         if (!created.IsSuccess) {
             await Clients.Caller.SendAsync("ErrorEstablishingConnection");
-            await Groups.RemoveFromGroupAsync(Context.ConnectionId, docId!);
         }
         else {
             await Clients.Caller.SendAsync("GetInitialState", result.Value);

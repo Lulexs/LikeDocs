@@ -48,8 +48,12 @@ export default class EditStore {
       });
     });
 
-    this.hubConnection.on("RecieveEdit", (edits: Edit[]) => {
-      edits.forEach((x) => console.log(x));
+    this.hubConnection.on("RecieveEdit", (edit: Edit) => {
+      this.edits = this.edits.filter((x) => x.n >= edit.n);
+      edit.diff = edit.diff.map((x) => {
+        return { ...x, operation: toJSVersion(x.operation)! };
+      });
+      console.log(edit);
     });
 
     this.hubConnection.on("ErrorEstablishingConnection", () => {
@@ -70,21 +74,41 @@ export default class EditStore {
   syncClientShadow = () => {
     if (this.clientText == null || this.clientShadow == null) return;
     const diffs = this.dmp.diff_main(this.clientShadow!, this.clientText!);
-    if (diffs.length > 0) {
-      this.edits.push({
-        n: this.n!,
-        m: this.m!,
-        diff: diffs.map((x) => {
-          return {
-            operation: x[0],
-            text: x[1],
-          };
-        }),
-      });
-      this.n! += 1;
-      this.clientShadow = this.clientText;
+    this.edits.push({
+      n: this.n!,
+      m: this.m!,
+      diff: diffs.map((x) => {
+        return {
+          operation: toCSharpVersion(x[0])!,
+          text: x[1],
+        };
+      }),
+    });
+    this.n! += 1;
+    this.clientShadow = this.clientText;
 
-      this.hubConnection?.invoke("NewEdits", this.edits);
-    }
+    this.hubConnection?.invoke("NewEdits", this.edits);
   };
+}
+
+function toJSVersion(arg0: number): number | undefined {
+  switch (arg0) {
+    case 0:
+      return -1;
+    case 1:
+      return 1;
+    case 2:
+      return 0;
+  }
+}
+
+function toCSharpVersion(arg0: number): number | undefined {
+  switch (arg0) {
+    case -1:
+      return 0;
+    case 1:
+      return 1;
+    case 0:
+      return 2;
+  }
 }

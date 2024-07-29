@@ -26,4 +26,17 @@ app.MapHub<EditHub>("/edit");
 
 app.Run();
 
-// [{"n":0,"m":0,"diff":[[-1,"Daburaemon"]]}]
+
+
+// using DiffMatchPatch;
+
+// string cs = "CAT";
+// string ct = "CATS";
+
+// var dmp = new diff_match_patch();
+
+// var diffs = dmp.diff_main(cs, ct);
+// var patches = dmp.patch_make(diffs);
+// cs = (string)dmp.patch_apply(patches, cs)[0];
+
+// Console.WriteLine(cs);
