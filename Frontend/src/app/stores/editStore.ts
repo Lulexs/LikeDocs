@@ -11,13 +11,12 @@ export default class EditStore {
   hubConnection: HubConnection | null | undefined = null;
   clientText: string | null = null;
   clientShadow: string | null = null;
-  backupShadow: string | null = null;
   n: number | null = null;
   m: number | null = null;
-  backupShadowN: number | null = null;
   dmp: diff_match_patch = new diff_match_patch();
   edits: Edit[] = [];
   numOfEdits: number = 0;
+  nextRequest: boolean = true;
 
   constructor() {
     makeAutoObservable(this);
@@ -41,19 +40,30 @@ export default class EditStore {
       runInAction(() => {
         this.clientText = initialContent;
         this.clientShadow = initialContent;
-        this.backupShadow = initialContent;
         this.n = 0;
         this.m = 0;
-        this.backupShadowN = 0;
       });
     });
 
     this.hubConnection.on("RecieveEdit", (edit: Edit) => {
+      console.log(edit);
       this.edits = this.edits.filter((x) => x.n >= edit.n);
       edit.diff = edit.diff.map((x) => {
         return { ...x, operation: toJSVersion(x.operation)! };
       });
-      console.log(edit);
+
+      const patches = this.dmp.patch_make(
+        edit.diff.map((x) => [x.operation, x.text])
+      );
+      runInAction(() => {
+        this.m! += 1;
+        this.clientShadow = this.dmp.patch_apply(
+          patches,
+          this.clientShadow!
+        )[0];
+        this.clientText = this.dmp.patch_apply(patches, this.clientText!)[0];
+        this.nextRequest = true;
+      });
     });
 
     this.hubConnection.on("ErrorEstablishingConnection", () => {
@@ -72,7 +82,12 @@ export default class EditStore {
   };
 
   syncClientShadow = () => {
-    if (this.clientText == null || this.clientShadow == null) return;
+    if (
+      this.clientText == null ||
+      this.clientShadow == null ||
+      !this.nextRequest
+    )
+      return;
     const diffs = this.dmp.diff_main(this.clientShadow!, this.clientText!);
     this.edits.push({
       n: this.n!,

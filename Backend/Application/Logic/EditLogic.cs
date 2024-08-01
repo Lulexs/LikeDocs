@@ -88,13 +88,9 @@ public class EditLogic {
         var dmp = new diff_match_patch();
 
         edits = edits.Where(x => x.n >= context.N).ToList();
-        foreach(var edit in edits) {
-            foreach (var diff in edit.diff) {
-                Console.WriteLine(diff.operation);
-            }
-        }
 
         if (edits.First().m < context!.M) {
+            Console.WriteLine("Here");
             context.ServerShadow = context.ShadowBackup;
             context.M = context.BackupM;
         }
@@ -110,6 +106,7 @@ public class EditLogic {
         var appliedPatch = dmp.patch_apply(patches, context.Document!.Text)[0];
         context.Document.Text = (string)appliedPatch;
 
+        _dataContext.Update(context.Document);
         _dataContext.Update(context);
         await _dataContext.SaveChangesAsync();
 

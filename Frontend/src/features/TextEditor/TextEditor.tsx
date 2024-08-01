@@ -2,11 +2,10 @@ import { Flex, Textarea } from "@mantine/core";
 import { selectToEdit, signinToEdit } from "../../app/layout/constants";
 import { useStore } from "../../app/stores/store";
 import { observer } from "mobx-react-lite";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 export default observer(function TextEditor() {
   const { userStore, workspaceStore, editStore } = useStore();
-  const [debounceTimeout, setDebounceTimeout] = useState<number | null>(null);
 
   const generateLineNumbers = (text: string) => {
     const lines = text.split("\n").length;
@@ -16,17 +15,12 @@ export default observer(function TextEditor() {
   const numbering = generateLineNumbers(editStore.clientText ?? "");
 
   useEffect(() => {
-    if (debounceTimeout) {
-      clearTimeout(debounceTimeout);
-    }
-    const newTimeout = setTimeout(() => {
+    const interval = setInterval(() => {
       editStore.syncClientShadow();
     }, 3000);
 
-    setDebounceTimeout(newTimeout);
-
-    return () => clearTimeout(newTimeout);
-  }, [editStore.clientText]);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <Flex m="20px" w="98%">
