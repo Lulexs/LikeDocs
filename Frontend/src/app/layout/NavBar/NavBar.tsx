@@ -18,12 +18,14 @@ import { LoginPage } from "./Auth/LoginPage";
 import { RegisterPage } from "./Auth/RegisterPage";
 import { useContextMenu } from "mantine-contextmenu";
 import useJoinWorkspaceDialog from "./Dialogs/useJoinWorkspaceDialog";
+import useCreateWorkspaceDialog from "./Dialogs/useCreateWorkspaceDialog";
 
 export default observer(function NavbarNested() {
   const { userStore, workspaceStore } = useStore();
   const location = useLocation();
   const { showContextMenu } = useContextMenu();
-  const { dialog: JoinWorkspaceDialog, toggle } = useJoinWorkspaceDialog();
+  const { dialog: JoinWorkspaceDialog, toggle: toggleJoinWorkspaceDialog } = useJoinWorkspaceDialog();
+  const {dialog: CreateWorkspaceDialog, toggle: toggleCreateWorkspaceDialog} = useCreateWorkspaceDialog();
 
   const links = [...workspaceStore.workspaces.values()].map((item) => (
     <LinksGroup
@@ -61,13 +63,13 @@ export default observer(function NavbarNested() {
                 key: "new-workspace",
                 icon: <IconFolderPlus size={25} />,
                 title: "New workspace",
-                onClick: () => console.log("Hi"),
+                onClick: () => toggleCreateWorkspaceDialog(),
               },
               {
                 key: "join-workspace",
                 icon: <IconJoinBevel size={25} />,
                 title: "Join workspace",
-                onClick: () => toggle(),
+                onClick: () => toggleJoinWorkspaceDialog(),
               },
             ])}
             className={classes.links}
@@ -91,6 +93,7 @@ export default observer(function NavbarNested() {
         </div>
       </nav>
       {JoinWorkspaceDialog}
+      {CreateWorkspaceDialog}
     </>
   );
 });

@@ -37,6 +37,8 @@ const Account = {
 
 const Workspaces = {
   list: () => requests.get<Workspace[]>("/workspaces"),
+  create: (name: string) => requests.post<Workspace>("/workspaces", {Name: name}),
+  delete: (id: string) => requests.del<void>(`/workspaces/${id}`)
 };
 
 const agent = {

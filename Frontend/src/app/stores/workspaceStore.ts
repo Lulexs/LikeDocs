@@ -33,4 +33,12 @@ export default class WorkspaceStore {
   clearWorkspaces = () => {
     this.workspaces = new Map();
   };
+
+  addWorkspacce = (workspace: Workspace) => {
+    runInAction(() => this.workspaces.set(workspace.id, workspace));
+  }
+
+  removeWorkspace = (id: string) => {
+    runInAction(() => this.workspaces.delete(id));
+  }
 }

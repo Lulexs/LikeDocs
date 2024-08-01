@@ -19,6 +19,7 @@ import classes from "./NavbarLinksGroup.module.css";
 import { useContextMenu } from "mantine-contextmenu";
 import { useStore } from "../../../stores/store";
 import { notifications } from "@mantine/notifications";
+import agent from "../../../api/agent";
 
 interface LinksGroupProps {
   icon: React.FC<any>;
@@ -78,7 +79,10 @@ export function LinksGroup({
             key: "delete-workspace",
             icon: <IconFolderMinus size={25} />,
             title: "Delete workspace",
-            onClick: () => console.log("Hi"),
+            onClick: async () => {
+              await agent.Workspaces.delete(workspaceId);
+              workspaceStore.removeWorkspace(workspaceId);
+            },
           },
           {
             key: "show-code",
