@@ -3,6 +3,7 @@ import { store } from "../stores/store";
 import { User, UserLoginValues, UserRegisterValues } from "../models/User";
 import { Workspace } from "../models/Workspace";
 import { notifications } from "@mantine/notifications";
+import { Document } from "../models/Document";
 
 axios.defaults.baseURL = import.meta.env.VITE_SERVER_API_URL;
 
@@ -17,7 +18,11 @@ axios.interceptors.request.use((config) => {
 axios.interceptors.response.use(
   (value) => value,
   (error: AxiosError) => {
-    notifications.show({color: "red", title: "Error", message: error.response?.data as string})
+    notifications.show({
+      color: "red",
+      title: "Error",
+      message: error.response?.data as string,
+    });
     return Promise.reject(error);
   }
 );
@@ -39,14 +44,22 @@ const Account = {
 
 const Workspaces = {
   list: () => requests.get<Workspace[]>("/workspaces"),
-  create: (name: string) => requests.post<Workspace>("/workspaces", {Name: name}),
+  create: (name: string) =>
+    requests.post<Workspace>("/workspaces", { Name: name }),
   delete: (id: string) => requests.del<void>(`/workspaces/${id}`),
-  join: (id: string) => requests.post<Workspace>(`/workspaces/join/${id}`, {})
+  join: (id: string) => requests.post<Workspace>(`/workspaces/join/${id}`, {}),
+};
+
+const Documents = {
+  create: (id: string, name: string) =>
+    requests.post<Document>(`documents/${id}`, { Name: name }),
+  delete: (id: string) => requests.del<void>(`documents/${id}`),
 };
 
 const agent = {
   Account,
   Workspaces,
+  Documents,
 };
 
 export default agent;

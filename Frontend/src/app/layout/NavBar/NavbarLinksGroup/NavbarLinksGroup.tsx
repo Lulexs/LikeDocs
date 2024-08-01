@@ -20,6 +20,7 @@ import { useContextMenu } from "mantine-contextmenu";
 import { useStore } from "../../../stores/store";
 import { notifications } from "@mantine/notifications";
 import agent from "../../../api/agent";
+import useCreateDocumentDialog from "../Dialogs/useCreateDocumentDialog";
 
 interface LinksGroupProps {
   icon: React.FC<any>;
@@ -40,6 +41,7 @@ export function LinksGroup({
   const [opened, setOpened] = useState(initiallyOpened || false);
   const { showContextMenu } = useContextMenu();
   const { workspaceStore } = useStore();
+  const { toggle, setWorkspaceId, dialog } = useCreateDocumentDialog();
 
   const items = (hasLinks ? links : []).map((link) => (
     <Text<"a">
@@ -56,7 +58,11 @@ export function LinksGroup({
           key: "delete-document",
           icon: <IconFileMinus size={25} />,
           title: "Delete document",
-          onClick: () => console.log("Hi"),
+          onClick: () => {
+            agent.Documents.delete(link.docId).then(() =>
+              workspaceStore.removeDocument(workspaceId, link.docId)
+            );
+          },
         },
       ])}
     >
@@ -73,14 +79,19 @@ export function LinksGroup({
             key: "new-document",
             icon: <IconFilePlus size={25} />,
             title: "New document",
-            onClick: () => console.log("Hi"),
+            onClick: () => {
+              setWorkspaceId(workspaceId);
+              toggle();
+            },
           },
           {
             key: "delete-workspace",
             icon: <IconFolderMinus size={25} />,
             title: "Delete workspace",
             onClick: () => {
-              agent.Workspaces.delete(workspaceId).then(() => workspaceStore.removeWorkspace(workspaceId));
+              agent.Workspaces.delete(workspaceId).then(() =>
+                workspaceStore.removeWorkspace(workspaceId)
+              );
             },
           },
           {
@@ -118,7 +129,7 @@ export function LinksGroup({
         </Group>
       </UnstyledButton>
       {hasLinks ? <Collapse in={opened}>{items}</Collapse> : null}
-
+      {dialog}
     </>
   );
 }

@@ -24,8 +24,10 @@ export default observer(function NavbarNested() {
   const { userStore, workspaceStore } = useStore();
   const location = useLocation();
   const { showContextMenu } = useContextMenu();
-  const { dialog: JoinWorkspaceDialog, toggle: toggleJoinWorkspaceDialog } = useJoinWorkspaceDialog();
-  const {dialog: CreateWorkspaceDialog, toggle: toggleCreateWorkspaceDialog} = useCreateWorkspaceDialog();
+  const { dialog: JoinWorkspaceDialog, toggle: toggleJoinWorkspaceDialog } =
+    useJoinWorkspaceDialog();
+  const { dialog: CreateWorkspaceDialog, toggle: toggleCreateWorkspaceDialog } =
+    useCreateWorkspaceDialog();
 
   const links = [...workspaceStore.workspaces.values()].map((item) => (
     <LinksGroup

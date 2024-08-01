@@ -4,10 +4,11 @@ import { useState } from "react";
 import agent from "../../../api/agent";
 import { useStore } from "../../../stores/store";
 
-export default function useCreateWorkspaceDialog() {
+export default function useCreateDocumentDialog() {
   const [opened, { toggle, close }] = useDisclosure();
   const [value, setValue] = useState("");
   const { workspaceStore } = useStore();
+  const [workspaceId, setWorkspaceId] = useState("");
 
   return {
     toggle: toggle,
@@ -20,12 +21,12 @@ export default function useCreateWorkspaceDialog() {
         radius="md"
       >
         <Text size="sm" mb="xs" fw={500}>
-          Create workspace information
+          Create document information
         </Text>
 
         <Group align="flex-end">
           <TextInput
-            placeholder="Name: ex MyWorkspace"
+            placeholder="Name: ex MyDocument"
             style={{ flex: 1 }}
             value={value}
             onChange={(event) => setValue(event.currentTarget.value)}
@@ -33,8 +34,8 @@ export default function useCreateWorkspaceDialog() {
           <Button
             onClick={() => {
               close();
-              agent.Workspaces.create(value).then((value) =>
-                workspaceStore.addWorkspacce(value)
+              agent.Documents.create(workspaceId, value).then((value) =>
+                workspaceStore.addDocument(workspaceId, value)
               );
             }}
           >
@@ -43,5 +44,6 @@ export default function useCreateWorkspaceDialog() {
         </Group>
       </Dialog>
     ),
+    setWorkspaceId: setWorkspaceId,
   };
 }

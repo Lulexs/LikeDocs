@@ -17,7 +17,7 @@ export default observer(function TextEditor() {
   useEffect(() => {
     const interval = setInterval(() => {
       editStore.syncClientShadow();
-    }, 3000);
+    }, 300);
 
     return () => clearInterval(interval);
   }, []);
