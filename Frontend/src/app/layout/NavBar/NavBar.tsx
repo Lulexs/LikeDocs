@@ -17,12 +17,13 @@ import { useLocation } from "react-router-dom";
 import { LoginPage } from "./Auth/LoginPage";
 import { RegisterPage } from "./Auth/RegisterPage";
 import { useContextMenu } from "mantine-contextmenu";
+import useJoinWorkspaceDialog from "./Dialogs/useJoinWorkspaceDialog";
 
 export default observer(function NavbarNested() {
   const { userStore, workspaceStore } = useStore();
   const location = useLocation();
-
   const { showContextMenu } = useContextMenu();
+  const { dialog: JoinWorkspaceDialog, toggle } = useJoinWorkspaceDialog();
 
   const links = [...workspaceStore.workspaces.values()].map((item) => (
     <LinksGroup
@@ -44,49 +45,52 @@ export default observer(function NavbarNested() {
   ));
 
   return (
-    <nav className={classes.navbar}>
-      <div className={classes.header}>
-        <Group justify="space-between">
-          <Logo />
-          <Code fw={700}>v1.0.0</Code>
-        </Group>
-      </div>
+    <>
+      <nav className={classes.navbar}>
+        <div className={classes.header}>
+          <Group justify="space-between">
+            <Logo />
+            <Code fw={700}>v1.0.0</Code>
+          </Group>
+        </div>
 
-      {userStore.isLoggedIn ? (
-        <ScrollArea
-          onContextMenu={showContextMenu([
-            {
-              key: "new-workspace",
-              icon: <IconFolderPlus size={25} />,
-              title: "New workspace",
-              onClick: () => console.log("Hi"),
-            },
-            {
-              key: "join-workspace",
-              icon: <IconJoinBevel size={25} />,
-              title: "Join workspace",
-              onClick: () => console.log("Hi"),
-            },
-          ])}
-          className={classes.links}
-        >
-          <div className={classes.linksInner}>{links}</div>
-        </ScrollArea>
-      ) : (
-        <Flex flex="1" justify="center" align="center">
-          {location.pathname == "/" && (
-            <Paper ta="center" flex="1">
-              Sign in to continue
-            </Paper>
-          )}
-          {location.pathname == "/signin" && <LoginPage />}
-          {location.pathname == "/signup" && <RegisterPage />}
-        </Flex>
-      )}
+        {userStore.isLoggedIn ? (
+          <ScrollArea
+            onContextMenu={showContextMenu([
+              {
+                key: "new-workspace",
+                icon: <IconFolderPlus size={25} />,
+                title: "New workspace",
+                onClick: () => console.log("Hi"),
+              },
+              {
+                key: "join-workspace",
+                icon: <IconJoinBevel size={25} />,
+                title: "Join workspace",
+                onClick: () => toggle(),
+              },
+            ])}
+            className={classes.links}
+          >
+            <div className={classes.linksInner}>{links}</div>
+          </ScrollArea>
+        ) : (
+          <Flex flex="1" justify="center" align="center">
+            {location.pathname == "/" && (
+              <Paper ta="center" flex="1">
+                Sign in to continue
+              </Paper>
+            )}
+            {location.pathname == "/signin" && <LoginPage />}
+            {location.pathname == "/signup" && <RegisterPage />}
+          </Flex>
+        )}
 
-      <div className={classes.footer}>
-        <UserButton />
-      </div>
-    </nav>
+        <div className={classes.footer}>
+          <UserButton />
+        </div>
+      </nav>
+      {JoinWorkspaceDialog}
+    </>
   );
 });

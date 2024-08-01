@@ -14,7 +14,12 @@ public class WorkspacesController : BaseApiController {
     [HttpPost("")]
     public async Task<ActionResult<ResponseWorkspaceDto>> CreateWorkspace([FromBody]RequestWorkspaceDto workspaceDto) {
         return HandleResult(await _workspaceLogic.CreateWorkspaceAsync(workspaceDto));
-    } 
+    }
+
+    [HttpPost("join/{workspaceId:guid}")]
+    public async Task<ActionResult<ResponseWorkspaceDto>> JoinWorkspace(Guid workspaceId) {
+        return HandleResult(await _workspaceLogic.JoinWorkspaceAsync(workspaceId));
+    }
 
     [HttpGet("")]
     public async Task<ActionResult<List<ResponseWorkspaceDto>>> GetWorkspaces() {

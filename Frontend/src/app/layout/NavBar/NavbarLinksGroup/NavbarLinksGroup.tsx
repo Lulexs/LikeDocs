@@ -10,6 +10,7 @@ import {
 } from "@mantine/core";
 import {
   IconChevronRight,
+  IconCode,
   IconFileMinus,
   IconFilePlus,
   IconFolderMinus,
@@ -17,6 +18,7 @@ import {
 import classes from "./NavbarLinksGroup.module.css";
 import { useContextMenu } from "mantine-contextmenu";
 import { useStore } from "../../../stores/store";
+import { notifications } from "@mantine/notifications";
 
 interface LinksGroupProps {
   icon: React.FC<any>;
@@ -78,6 +80,17 @@ export function LinksGroup({
             title: "Delete workspace",
             onClick: () => console.log("Hi"),
           },
+          {
+            key: "show-code",
+            icon: <IconCode size={25} />,
+            title: "Show code",
+            onClick: () => {
+              notifications.show({
+                title: "Code",
+                message: `This workspaces code is ${workspaceId}`,
+              });
+            },
+          },
         ])}
         className={classes.control}
       >
@@ -102,6 +115,7 @@ export function LinksGroup({
         </Group>
       </UnstyledButton>
       {hasLinks ? <Collapse in={opened}>{items}</Collapse> : null}
+
     </>
   );
 }

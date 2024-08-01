@@ -96,4 +96,47 @@ public class WorkspaceLogic {
             }
         );
     }
+
+    public async Task<Result<ResponseWorkspaceDto>> JoinWorkspaceAsync(Guid workspaceId) {
+        var userUsername = _userAccessor.GetUsername();
+        var user = await _dataContext.Users.FirstOrDefaultAsync(x => x.UserName == userUsername);
+        
+        if (user == null) {
+            return Result<ResponseWorkspaceDto>.Failure("Couldn't identify user");
+        }
+
+        var workspace = await _dataContext.Workspaces
+                                          .Include(x => x.Documents)
+                                          .Include(x => x.Members)
+                                          .Where(x => x.Id == workspaceId)
+                                          .FirstOrDefaultAsync();
+        
+        if (workspace == null) {
+            return Result<ResponseWorkspaceDto>.Failure("Couldn't find workspace with the given id");
+        }
+
+        if (workspace.Members.Contains(user)) {
+            return Result<ResponseWorkspaceDto>.Failure("You are alredy member of this workspace");
+        }
+
+        workspace.Members.Add(user);
+        _dataContext.Update(workspace);
+        var result = await _dataContext.SaveChangesAsync() > 0;
+
+        if (result) {
+            return Result<ResponseWorkspaceDto>.Success(
+                new ResponseWorkspaceDto() {
+                    Id = workspace.Id,
+                    Name = workspace.Name,
+                    OwnsWorkspace = false,
+                    Documents = workspace.Documents.Select(x => new ResponseDocumentDto() {
+                        Id = x.Id,
+                        Name = x.Name,
+                    }).ToList()
+                }
+            );
+        }
+
+        return Result<ResponseWorkspaceDto>.Failure("Error trying to join workspace");
+    }
 }
