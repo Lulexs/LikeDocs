@@ -1,10 +1,13 @@
 import { Dialog, Group, TextInput, Button, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useState } from "react";
+import { useStore } from "../../../stores/store";
+import agent from "../../../api/agent";
 
 export default function useJoinWorkspaceDialog() {
   const [opened, { toggle, close }] = useDisclosure();
   const [value, setValue] = useState("");
+  const {workspaceStore} = useStore();
 
   return {
     toggle: toggle,
@@ -28,9 +31,9 @@ export default function useJoinWorkspaceDialog() {
             onChange={(event) => setValue(event.currentTarget.value)}
           />
           <Button
-            onClick={() => {
-              console.log("Hi from custom hook");
+            onClick={async () => {
               close();
+              workspaceStore.addWorkspacce(await agent.Workspaces.join(value));
             }}
           >
             Join

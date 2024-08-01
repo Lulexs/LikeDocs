@@ -2,10 +2,11 @@ import axios, { AxiosError, AxiosResponse } from "axios";
 import { store } from "../stores/store";
 import { User, UserLoginValues, UserRegisterValues } from "../models/User";
 import { Workspace } from "../models/Workspace";
+import { notifications } from "@mantine/notifications";
 
 axios.defaults.baseURL = import.meta.env.VITE_SERVER_API_URL;
 
-const responseBody = <T>(response: AxiosResponse<T>) => response.data;
+const responseBody = <T>(response: AxiosResponse<T>) => response?.data;
 
 axios.interceptors.request.use((config) => {
   const token = store.commonStore.token;
@@ -16,7 +17,8 @@ axios.interceptors.request.use((config) => {
 axios.interceptors.response.use(
   (value) => value,
   (error: AxiosError) => {
-    console.log(error);
+    notifications.show({color: "red", title: "Error", message: error.response?.data as string})
+    return Promise.reject(error);
   }
 );
 
@@ -38,7 +40,8 @@ const Account = {
 const Workspaces = {
   list: () => requests.get<Workspace[]>("/workspaces"),
   create: (name: string) => requests.post<Workspace>("/workspaces", {Name: name}),
-  delete: (id: string) => requests.del<void>(`/workspaces/${id}`)
+  delete: (id: string) => requests.del<void>(`/workspaces/${id}`),
+  join: (id: string) => requests.post<Workspace>(`/workspaces/join/${id}`, {})
 };
 
 const agent = {

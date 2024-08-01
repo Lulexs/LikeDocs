@@ -32,8 +32,8 @@ export default function useCreateWorkspaceDialog() {
           />
           <Button
             onClick={async () => {
-              workspaceStore.addWorkspacce(await agent.Workspaces.create(value));
               close();
+              workspaceStore.addWorkspacce(await agent.Workspaces.create(value));
             }}
           >
             Create

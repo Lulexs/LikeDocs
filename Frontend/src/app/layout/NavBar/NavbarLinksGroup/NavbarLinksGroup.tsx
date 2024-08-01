@@ -79,9 +79,8 @@ export function LinksGroup({
             key: "delete-workspace",
             icon: <IconFolderMinus size={25} />,
             title: "Delete workspace",
-            onClick: async () => {
-              await agent.Workspaces.delete(workspaceId);
-              workspaceStore.removeWorkspace(workspaceId);
+            onClick: () => {
+              agent.Workspaces.delete(workspaceId).then(() => workspaceStore.removeWorkspace(workspaceId));
             },
           },
           {
