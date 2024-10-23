@@ -1,4 +1,4 @@
-# Real-Time Collaborative Code Editor (Differential Synchronization)
+# Real-Time Collaborative Text Editor (Differential Synchronization)
 
 ## Overview
 
